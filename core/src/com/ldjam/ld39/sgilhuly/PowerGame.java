@@ -1,11 +1,12 @@
 package com.ldjam.ld39.sgilhuly;
 
+import java.io.FileNotFoundException;
 import java.util.ArrayList;
+import java.util.Iterator;
 
 import com.badlogic.gdx.ApplicationAdapter;
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
-import com.badlogic.gdx.audio.Music;
 import com.badlogic.gdx.graphics.Color;
 import com.badlogic.gdx.graphics.GL20;
 import com.badlogic.gdx.graphics.OrthographicCamera;
@@ -20,7 +21,6 @@ import com.badlogic.gdx.utils.viewport.Viewport;
 public class PowerGame extends ApplicationAdapter {
 	public static final int VIRTUAL_WIDTH = 640;
 	public static final int VIRTUAL_HEIGHT = 480;
-	public static final float TRANSITION_SPEED = 8f;
 
 	public static final int LEFT = 0;
 	public static final int MIDDLE = 1;
@@ -30,16 +30,17 @@ public class PowerGame extends ApplicationAdapter {
 	ShapeRenderer shapeBatch;
 	Texture star;
 	Texture goal;
-	ArrayList<RhythmObject> objects;
+	ArrayList<Note> activeNotes;
+	int nextNote;
 	OrthographicCamera cam;
 	Viewport viewport;
-	RhythmObject obj;
 	Color tempColour = new Color();
-	Music music;
+	Conductor conductor;
 	
 	int selected = MIDDLE;
 	int lastSelected = LEFT;
 	float transition = 1f;
+	float brightness = 1f;
 	
 	private Vector2[] trackData;
 	
@@ -52,13 +53,17 @@ public class PowerGame extends ApplicationAdapter {
 		shapeBatch = new ShapeRenderer();
 		star = new Texture("star.png");
 		goal = new Texture("goal.png");
-		obj = new RhythmObject(2);
-		obj.speed = 300;
-		
-		music = Gdx.audio.newMusic(Gdx.files.internal("test.ogg"));
-		music.play();
 		
 		prepGraphics();
+		try {
+			conductor = new Conductor("test.json");
+			conductor.music.play();
+		} catch(FileNotFoundException e) {
+			e.printStackTrace();
+		}
+		
+		activeNotes = new ArrayList<Note>();
+		nextNote = 0;
 	}
 	
 	private void drawTrack() {
@@ -84,16 +89,16 @@ public class PowerGame extends ApplicationAdapter {
 		Gdx.gl.glClearColor(0, 0, 0, 1);
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
-		obj.update(Gdx.graphics.getDeltaTime());
+		conductor.update();
 		
 		if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE)) {
-			System.out.println(obj.eta);
-			obj.eta = 1;
+			/*System.out.println(obj.eta);
+			obj.eta = 1;*/
 		}
 		
 		// Check for track transitions
 		if(transition < 1) {
-			transition += Gdx.graphics.getDeltaTime() * TRANSITION_SPEED;
+			transition += Gdx.graphics.getDeltaTime() * Constants.TRANSITION_SPEED;
 			if(transition > 1) {
 				transition = 1;
 			}
@@ -118,21 +123,42 @@ public class PowerGame extends ApplicationAdapter {
 			}
 		}
 		
+		// Check for activating notes
+		while(nextNote < conductor.notes.size() && conductor.notes.get(nextNote).isShown(conductor.currentTime)) {
+			Note note = conductor.notes.get(nextNote++);
+			note.prepareToDraw(star);
+			activeNotes.add(note);
+			System.out.println("Add note!");
+		}
+		
 		spriteBatch.setProjectionMatrix(cam.combined);
 		
 		shapeBatch.begin(ShapeType.Filled);
-		shapeBatch.setColor(Color.DARK_GRAY);
+		tempColour.set(Color.DARK_GRAY).mul(brightness);
+		shapeBatch.setColor(tempColour);
 		shapeBatch.rect(0, 0, viewport.getWorldWidth(), viewport.getWorldHeight());
+		drawTrack();
 		shapeBatch.end();
 		
 		spriteBatch.begin();
-		spriteBatch.draw(star, music.getPosition() * 240, 0);
+		spriteBatch.draw(star, conductor.currentBar * 32, 0);
+		if(conductor.isNewBar) {
+			spriteBatch.draw(star, 0, 100);
+		}
+		if(conductor.isNewBeat) {
+			spriteBatch.draw(star, 0, 50);
+		}
+		// Update active notes
+		for(Iterator<Note> it = activeNotes.iterator(); it.hasNext();) {
+			Note note = it.next();
+			if(note.time < conductor.currentTime) {
+				System.out.println("Remove note!");
+				it.remove();
+			} else {
+				note.draw(conductor.currentTime, 200, spriteBatch);
+			}
+		}
 		spriteBatch.end();
-
-		shapeBatch.begin(ShapeType.Filled);
-		shapeBatch.setColor(Color.RED);
-		drawTrack();
-		shapeBatch.end();
 	}
 	
 	@Override
