@@ -13,4 +13,8 @@ public abstract class Helper {
 	public static float calcHeight(float distance) {
 		return tween(1 / distance, Constants.TRACK_VANISHING_Y, Constants.TRACK_BASE_Y);
 	}
+	
+	public static float clamp(float n, float min, float max) {
+		return n < min ? min : n > max ? max : n;
+	}
 }

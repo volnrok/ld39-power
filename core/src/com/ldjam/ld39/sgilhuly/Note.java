@@ -11,6 +11,7 @@ public class Note {
 	public float position;
 	public float time;
 	public float showtime;
+	public boolean done;
 	
 	public Sprite spr;
 	
@@ -29,6 +30,7 @@ public class Note {
 	
 	public void prepareToDraw(Texture tex) {
 		spr = new Sprite(tex);
+		done = false;
 	}
 	
 	public boolean isShown(float currentTime) {
@@ -36,7 +38,8 @@ public class Note {
 	}
 	
 	public void draw(float currentTime, float speed, SpriteBatch batch) {
-		float distance = (1 - Helper.untween(currentTime, showtime, time)) * Constants.TRACK_END_SCALE + 1;
+		float progress = Helper.untween(currentTime, showtime, time);
+		float distance = (1 - progress) * Constants.TRACK_END_SCALE + 1;
 		float posy = Helper.calcHeight(distance);
 		float xbase = 0, xtop = 0;
 		switch(track) {
@@ -54,9 +57,13 @@ public class Note {
 			break;
 		}
 		float posx = Helper.tween(Helper.untween(posy, Constants.TRACK_BASE_Y, Constants.TRACK_TOP_Y), xbase, xtop);
-		spr.setScale(1 / distance);
+		// Calculate opacity, fade in, and fade out if wasn't hit
+		float x = progress - 0.55f;
+		float opacity = Helper.clamp(5 * (1 - x * x / 0.25f), 0, 1);
+		spr.setScale(0.5f / distance);
 		//spr.set
 		spr.setPosition(posx - (spr.getWidth() / 2), posy - (spr.getHeight() / 2));
-		spr.draw(batch);
+		spr.draw(batch, opacity);
+		done = progress > 1 && opacity <= 0;
 	}
 }

@@ -55,7 +55,7 @@ public class Conductor {
 		
 		System.out.println("File loaded, " + notes.size() + " notes found");
 		
-		music = Gdx.audio.newMusic(Gdx.files.internal(root.getString("filename")));
+		music = Gdx.audio.newMusic(Gdx.files.internal("data/" + root.getString("filename")));
 	}
 	
 	public void update() {
