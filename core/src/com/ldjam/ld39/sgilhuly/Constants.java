@@ -50,7 +50,8 @@ public class Constants {
 	public static final int SCORE_MAX_COMBO = 4;
 	public static final int SCORE_HITS_PER_COMBO = 8;
 	
-	public static final float BRIGHTNESS_PENALTY_PER_MISS = 0.2f;
-	public static final float BRIGHTNESS_PENALTY_PER_SECOND = 0.04f;
+	public static final float BRIGHTNESS_PENALTY_PER_MISS = 0.15f;
+	public static final float BRIGHTNESS_PENALTY_PER_SECOND = 0.06f;
 	public static final float BRIGHTNESS_BONUS_PER_HIT = 0.1f;
+	public static final float LIGHTNESS_TRANSITION_SECONDS = 1.2f;
 }

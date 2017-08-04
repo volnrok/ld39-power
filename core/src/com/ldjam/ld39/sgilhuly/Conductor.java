@@ -1,13 +1,13 @@
 package com.ldjam.ld39.sgilhuly;
 
 import java.io.FileNotFoundException;
-import java.io.FileReader;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.audio.Music;
+import com.badlogic.gdx.files.FileHandle;
 import com.badlogic.gdx.utils.JsonReader;
 import com.badlogic.gdx.utils.JsonValue;
 
@@ -29,7 +29,7 @@ public class Conductor {
 	
 	public Conductor(String filename) throws FileNotFoundException {
 		JsonReader reader = new JsonReader();
-		JsonValue root = reader.parse(new FileReader(filename));
+		JsonValue root = reader.parse(new FileHandle(filename));
 		
 		bpm = root.getFloat("bpm");
 		bps = bpm / 60.0f;
