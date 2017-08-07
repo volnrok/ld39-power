@@ -13,6 +13,12 @@ public class PowerGame extends ApplicationAdapter {
 	OrthographicCamera cam;
 	Viewport viewport;
 	GameScreen activeScreen = null;
+
+	public int levelPlayed = 0;
+	public Entry[] playableLevels = {
+			new Entry("Easy", "data/test.json"),
+			new Entry("Hard", "data/YuSong.json")
+	};
 	
 	@Override
 	public void create() {
@@ -50,15 +56,31 @@ public class PowerGame extends ApplicationAdapter {
 		activeScreen = screen;
 	}
 	
+	public Entry getLevelPlayed() {
+		return playableLevels[levelPlayed];
+	}
+	
 	public void goToMainScreen(boolean showAnimation) {
 		changeScreen(new StartScreen(this, showAnimation));
 	}
 	
-	public void goToRhythmScreen(String rhythmFile) {
-		changeScreen(new RhythmScreen(this, rhythmFile));
+	public void goToRhythmScreen() {
+		changeScreen(new RhythmScreen(this));
 	}
 	
-	public void goToScoreScreen(String rhythmFile, int score, boolean levelCompleted) {
-		changeScreen(new ScoreScreen(this, rhythmFile, score, levelCompleted));
+	public void goToScoreScreen(int score, boolean levelCompleted) {
+		changeScreen(new ScoreScreen(this, score, levelCompleted));
+	}
+	
+	public class Entry {
+		public String name;
+		public String rhythmFile;
+		public int highScore;
+		
+		public Entry(String name, String rhythmFile) {
+			this.name = name;
+			this.rhythmFile = rhythmFile;
+			highScore = 0;
+		}
 	}
 }

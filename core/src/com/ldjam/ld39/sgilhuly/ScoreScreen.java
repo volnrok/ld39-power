@@ -14,9 +14,9 @@ public class ScoreScreen extends GameScreen {
 	BitmapFont font = new BitmapFont();
 	String outputText;
 
-	public ScoreScreen(PowerGame game, String rhythmFile, int score, boolean levelCompleted) {
+	public ScoreScreen(PowerGame game, int score, boolean levelCompleted) {
 		super(game);
-		this.rhythmFile = rhythmFile;
+		this.rhythmFile = game.getLevelPlayed().rhythmFile;
 		this.score = score;
 		this.levelCompleted = levelCompleted;
 		
@@ -27,7 +27,12 @@ public class ScoreScreen extends GameScreen {
 			outputText = "Blackouts!";
 			font.setColor(1, 1, 1, 1);
 		}
-		outputText += "\n\nScore: " + score + "\n\nPress 'r' to restart\nPress 'Esc' to select a different level";
+		outputText += "\n\nScore: " + score;
+		if(score > game.getLevelPlayed().highScore) {
+			game.getLevelPlayed().highScore = score;
+			outputText += " (New high score!)";
+		}
+		outputText += "\n\nPress 'r' to restart\nPress 'Esc' to select a different level";
 	}
 
 	@Override
@@ -39,12 +44,15 @@ public class ScoreScreen extends GameScreen {
 		}
 		Gdx.gl.glClear(GL20.GL_COLOR_BUFFER_BIT);
 		
+		spriteBatch.setProjectionMatrix(game.cam.combined);
+		shapeBatch.setProjectionMatrix(game.cam.combined);
+		
 		spriteBatch.begin();
-		font.draw(spriteBatch, outputText, PowerGame.VIRTUAL_WIDTH / 2 - 90, PowerGame.VIRTUAL_HEIGHT / 2 + 60);
+		font.draw(spriteBatch, outputText, PowerGame.VIRTUAL_WIDTH / 2 - 110, PowerGame.VIRTUAL_HEIGHT / 2 + 60);
 		spriteBatch.end();
 		
 		if(Gdx.input.isKeyPressed(Input.Keys.R)) {
-			game.goToRhythmScreen(rhythmFile);
+			game.goToRhythmScreen();
 		} else if(Gdx.input.isKeyPressed(Input.Keys.ESCAPE)) {
 			game.goToMainScreen(false);
 		}

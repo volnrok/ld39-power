@@ -41,15 +41,32 @@ public class Conductor {
 		for(JsonValue entry : noteData.iterator()) {
 			if(entry.has("note")) {
 				JsonValue data = entry.get("note");
-				Note note = new Note(data.getInt(0), data.getInt(1), data.getFloat(2), beatcount);
+				Note note = new Note(data.getInt(0), data.getInt(1), data.getFloat(2), beatcount, false);
 				note.calculateTime(bps, offset);
 				notes.add(note);
+			} else if(entry.has("slide")) {
+				Note lastHeldNote = null;
+				for(JsonValue heldNote : entry.get("slide")) {
+					if(heldNote.has("note")) {
+						JsonValue data = heldNote.get("note");
+						Note note = new Note(data.getInt(0), data.getInt(1), data.getFloat(2), beatcount, true);
+						note.calculateTime(bps, offset);
+						note.isHeld = true;
+						if(lastHeldNote != null) {
+							lastHeldNote.nextNote = note;
+						} else {
+							note.isFirstHeld = true;
+						}
+						notes.add(note);
+						lastHeldNote = note;
+					}
+				}
 			}
 		}
 		Collections.sort(notes, new Comparator<Note>() {
 			@Override
 			public int compare(Note a, Note b) {
-				return Float.compare(a.position, b.position);
+				return Float.compare(a.absoluteBeat, b.absoluteBeat);
 			}
 		});
 		
@@ -67,7 +84,7 @@ public class Conductor {
 		currentBar = (int)(currentPosition / beatcount) + 1;
 		currentBeat = (currentPosition % beatcount) + 1;
 
-		isNewBar = currentBar != lastBar;
-		isNewBeat = (int)(currentBeat) != (int)(lastBeat);
+		isNewBar = music.isPlaying() && currentBar != lastBar;
+		isNewBeat = music.isPlaying() && (int)(currentBeat) != (int)(lastBeat);
 	}
 }

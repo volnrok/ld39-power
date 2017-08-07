@@ -388,18 +388,6 @@
 		{"note":[1, 60, 2.5]},
 		{"note":[1, 60, 3.5]},
 		{"note":[1, 60, 4]},
-		{"note":[1, 60, 4.5]},
-
-		{
-			"_comment": "Slide: array of simple notes, change the track to slide, last note is the end",
-			"_comment2": "CURRENTLY NOT IMPLEMENTED",
-			"slide": [
-				{"note":[1, 5, 1]},
-				{"note":[1, 5, 2]},
-				{"note":[1, 6, 1]},
-				{"note":[2, 6, 3]},
-				{"note":[2, 6, 3.5]}
-			]
-		}
+		{"note":[1, 60, 4.5]}
 	]
 }
