@@ -77,7 +77,7 @@ public class StartScreen extends GameScreen {
 					text = "  " + text;
 					font.setColor(1, 1, 1, Helper.clamp(animationBarNumber - 2, 0, 1));
 				}
-				String highScore = "" + game.playableLevels[i].highScore;
+				String highScore = "" + game.playableLevels[i].score;
 				layout.setText(font, highScore);
 				font.draw(spriteBatch, highScore, 300 - layout.width, 240 - 20 * i + 60 * (float) Math.sqrt(Helper.clamp(animationBarNumber - 2, 0, 1)));
 				font.draw(spriteBatch, text, 320, 240 - 20 * i + 60 * (float) Math.sqrt(Helper.clamp(animationBarNumber - 2, 0, 1)));

@@ -16,7 +16,7 @@ public class ScoreScreen extends GameScreen {
 
 	public ScoreScreen(PowerGame game, int score, boolean levelCompleted) {
 		super(game);
-		this.rhythmFile = game.getLevelPlayed().rhythmFile;
+		this.rhythmFile = game.getLevelPlayed().file;
 		this.score = score;
 		this.levelCompleted = levelCompleted;
 		
@@ -28,9 +28,10 @@ public class ScoreScreen extends GameScreen {
 			font.setColor(1, 1, 1, 1);
 		}
 		outputText += "\n\nScore: " + score;
-		if(score > game.getLevelPlayed().highScore) {
-			game.getLevelPlayed().highScore = score;
+		if(score > game.getLevelPlayed().score) {
+			game.getLevelPlayed().score = score;
 			outputText += " (New high score!)";
+			game.saveHighScores();
 		}
 		outputText += "\n\nPress 'r' to restart\nPress 'Esc' to select a different level";
 	}

@@ -1,0 +1,58 @@
+{
+	filename: easy.mp3,
+	bpm: 100,
+	beatdiv: 4,
+	beatcount: 4,
+	offset: 0,
+	_comment: "Simple notes: track (0, 1, 2), bar, beat",
+	
+	notes: [
+		{note:[1, 2, 1]},
+		{note:[1, 2, 2]},
+		{slide: [
+			{note:[1, 2, 3]},
+			{note:[1, 2, 4]}
+		]},
+		
+		{note:[2, 3, 1]},
+		{note:[2, 3, 2]},
+		{slide: [
+			{note:[2, 3, 3]},
+			{note:[2, 3, 4]}
+		]},
+		
+		{note:[0, 4, 1]},
+		{note:[0, 4, 2]},
+		{slide: [
+			{note:[0, 4, 3]},
+			{note:[0, 4, 4]}
+		]},
+		
+		{slide: [
+			{note:[2, 5, 1]},
+			{note:[2, 5, 4]}
+		]},
+		
+		
+		
+		{slide: [
+			{note:[1, 6, 1]},
+			{note:[2, 6, 3]},
+			{note:[2, 6, 4]}
+		]},
+		
+		{slide: [
+			{note:[1, 7, 1]},
+			{note:[0, 7, 3]},
+			{note:[0, 7, 4]}
+		]},
+		
+		{note:[0, 8, 1]},
+		{slide: [
+			{note:[0, 8, 2]},
+			{note:[1, 8, 4]},
+			{note:[2, 9, 1]},
+			{note:[2, 9, 3]}
+		]}
+	]
+}

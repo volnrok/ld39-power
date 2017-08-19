@@ -1,6 +1,5 @@
 package com.ldjam.ld39.sgilhuly;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
@@ -27,7 +26,7 @@ public class Conductor {
 	public boolean isNewBar;
 	public boolean isNewBeat;
 	
-	public Conductor(String filename) throws FileNotFoundException {
+	public Conductor(String filename) {
 		JsonReader reader = new JsonReader();
 		JsonValue root = reader.parse(new FileHandle(filename));
 		

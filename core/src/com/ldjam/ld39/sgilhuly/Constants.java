@@ -20,7 +20,7 @@ public class Constants {
 	public static final int TRACK_RIGHT_TOP_X = TRACK_BASE_X + TRACK_SEP_TOP;
 	public static final int TRACK_BASE_LINE_WIDTH = 12;
 	
-	public static final float TRANSITION_SPEED = 4f; // What fraction of a second does it take to switch tracks?
+	public static final float TRANSITION_SPEED = 8f; // What fraction of a second does it take to switch tracks?
 	public static final float NOTE_WINDOW = 0.08f; // How much time to hit note
 	public static final float NOTE_BEATS_SHOWN = 3; // How many beats before hit to show
 	public static final float TRACK_END_SCALE = TRACK_HALF_WIDTH_BASE / TRACK_HALF_WIDTH_TOP;
@@ -35,7 +35,11 @@ public class Constants {
 	public static final float PULSE_MIN = 0.4f;
 	public static final float PULSE_PARTIAL = 0.75f;
 	
+	public static final float PARTICLE_STAR_DELTA_SCALE = -0.2f;
+	public static final float PARTICLE_STAR_DELTA_ALPHA = 1.2f;
+
 	public static final int SCORE_PER_HIT = 10;
+	public static final int SCORE_HELD_PER_SECOND = 8;
 	public static final int SCORE_MAX_COMBO = 4;
 	public static final int SCORE_HITS_PER_COMBO = 8;
 	

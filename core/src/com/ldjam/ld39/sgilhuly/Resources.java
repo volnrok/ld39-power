@@ -11,6 +11,7 @@ public abstract class Resources {
 	public static Texture buttonHeld;
 	public static Texture goal;
 	public static Texture gradient;
+	public static Texture star;
 	public static Texture title;
 	public static Texture white;
 	public static Texture combo2, combo3, combo4;
@@ -30,6 +31,8 @@ public abstract class Resources {
 		goal.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		gradient = new Texture("data/gradient.png");
 		gradient.setFilter(TextureFilter.Linear, TextureFilter.Linear);
+		star = new Texture("data/star.png");
+		star.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		title = new Texture("data/title.png");
 		title.setFilter(TextureFilter.Linear, TextureFilter.Linear);
 		white = new Texture("data/white.png");
@@ -53,6 +56,7 @@ public abstract class Resources {
 		buttonHeld.dispose();
 		goal.dispose();
 		gradient.dispose();
+		star.dispose();
 		title.dispose();
 		combo2.dispose();
 		combo3.dispose();

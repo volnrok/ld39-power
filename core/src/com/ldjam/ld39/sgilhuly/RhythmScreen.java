@@ -1,8 +1,8 @@
 package com.ldjam.ld39.sgilhuly;
 
-import java.io.FileNotFoundException;
 import java.util.ArrayList;
 import java.util.Iterator;
+import java.util.Random;
 
 import com.badlogic.gdx.Gdx;
 import com.badlogic.gdx.Input;
@@ -37,6 +37,7 @@ public class RhythmScreen extends GameScreen implements InputProcessor {
 	BitmapFont font = new BitmapFont();
 	String rhythmFile;
 	Note heldNote = null;
+	Random rand = new Random(System.nanoTime());
 	
 	int selected = MIDDLE;
 	int lastSelected = LEFT;
@@ -47,26 +48,22 @@ public class RhythmScreen extends GameScreen implements InputProcessor {
 	
 	int combo = 1;
 	int hits = 0;
-	int score = 0;
+	float score = 0;
 	
 	private float[][] trackData;
 	private PolygonRegion[] trackPolygons;
 	
 	public RhythmScreen(PowerGame game) {
 		super(game);
-		this.rhythmFile = game.getLevelPlayed().rhythmFile;
+		this.rhythmFile = game.getLevelPlayed().file;
 		
 		white = new Sprite(Resources.white);
 		white.setScale(PowerGame.VIRTUAL_WIDTH / Resources.white.getWidth() * 2, PowerGame.VIRTUAL_HEIGHT / Resources.white.getHeight() * 2);
 		
 		prepGraphics();
 		
-		try {
-			conductor = new Conductor(rhythmFile);
-			conductor.music.play();
-		} catch(FileNotFoundException e) {
-			e.printStackTrace();
-		}
+		conductor = new Conductor(rhythmFile);
+		conductor.music.play();
 		
 		Gdx.input.setInputProcessor(this);
 	}
@@ -123,25 +120,6 @@ public class RhythmScreen extends GameScreen implements InputProcessor {
 			releaseNote();
 		}
 		
-		/*if(transition >= 1) {
-			int desired = MIDDLE;
-			if(Gdx.input.isKeyPressed(Input.Keys.LEFT)) {
-				desired = LEFT;
-			} else if(Gdx.input.isKeyPressed(Input.Keys.RIGHT)) {
-				desired = RIGHT;
-			}
-			
-			if(desired != selected) {
-				// Make sure we don't switch from left to right, or vice versa
-				if((desired == LEFT && selected == RIGHT) || (desired == RIGHT && selected == LEFT)) {
-					desired = MIDDLE;
-				}
-				lastSelected = selected;
-				selected = desired;
-				transition = 0;
-			}
-		}*/
-		
 		// Check for activating notes
 		while(nextNote < conductor.notes.size() && conductor.notes.get(nextNote).isShown(conductor.currentTime)) {
 			Note note = conductor.notes.get(nextNote++);
@@ -149,45 +127,6 @@ public class RhythmScreen extends GameScreen implements InputProcessor {
 			activeNotes.add(note);
 		}
 		
-		// Update active notes
-		
-		// Check for pressing spacebar/enter
-		/*if(Gdx.input.isKeyJustPressed(Input.Keys.SPACE) || Gdx.input.isKeyJustPressed(Input.Keys.ENTER)) {
-			Note hitNote = null;
-			for(Note n : activeNotes) {
-				if(Math.abs(n.time - conductor.currentTime) <= Constants.NOTE_WINDOW && n.track == selected) {
-					hitNote = n;
-					break;
-				}
-			}
-			if(hitNote != null) {
-				hits++;
-				score += Constants.SCORE_PER_HIT * combo;
-				if(hits % Constants.SCORE_HITS_PER_COMBO == 0 && combo < Constants.SCORE_MAX_COMBO) {
-					combo++;
-					Resources.powerup.play(SFX_VOLUME);
-				}
-				
-				// TODO: Repeated code, clean up when there is time!
-				float posx = Constants.TRACK_BASE_X;
-				if(selected == 0) {
-					posx = Constants.TRACK_LEFT_BASE_X;
-				} else if(selected == 2) {
-					posx = Constants.TRACK_RIGHT_BASE_X;
-				}
-				float posy = Constants.TRACK_BASE_Y;
-				particles.add(new Particle(posx, posy, Resources.button));
-				activeNotes.remove(hitNote);
-				brightness += Constants.BRIGHTNESS_BONUS_PER_HIT;
-			} else {
-				// No brightness penalty, but lose combo
-				hits = 0;
-				if(combo != 1) {
-					combo = 1;
-					Resources.powerdown.play(SFX_VOLUME);
-				}
-			}
-		}*/
 		// Update active notes
 		for(Iterator<Note> it = activeNotes.iterator(); it.hasNext();) {
 			Note n = it.next();
@@ -206,6 +145,15 @@ public class RhythmScreen extends GameScreen implements InputProcessor {
 			}
 			if(n.done) {
 				it.remove();
+			}
+		}
+		
+		// Add points if holding note
+		if(heldNote != null) {
+			score += combo * Gdx.graphics.getDeltaTime() * Constants.SCORE_HELD_PER_SECOND;
+			// Randomly add star particles
+			if(rand.nextFloat() < (combo + 4) / 40f) {
+				addStarParticle();
 			}
 		}
 		
@@ -233,7 +181,7 @@ public class RhythmScreen extends GameScreen implements InputProcessor {
 		for(Note n : activeNotes) {
 			n.drawSprite(spriteBatch);
 		}
-		// Particles TODO: clean up particle system
+		// Draw particles
 		for(Iterator<Particle> it = particles.iterator(); it.hasNext();) {
 			Particle p = it.next();
 			p.updateRender(Gdx.graphics.getDeltaTime(), spriteBatch);
@@ -253,7 +201,7 @@ public class RhythmScreen extends GameScreen implements InputProcessor {
 		white.draw(spriteBatch);
 		
 		// Draw score
-		font.draw(spriteBatch, "Score: " + score, Constants.TRACK_BASE_X - 50, 80);
+		font.draw(spriteBatch, "Score: " + ((int) score), Constants.TRACK_BASE_X - 50, 80);
 		Texture comboTexture = null;
 		switch(combo) {
 		case 2:
@@ -285,11 +233,11 @@ public class RhythmScreen extends GameScreen implements InputProcessor {
 		
 		// Check for the end of the level
 		if(lightness >= 1) {
-			game.goToScoreScreen(score, true);
+			game.goToScoreScreen((int) score, true);
 		} else if(brightness <= 0) {
 			conductor.music.stop();
 			Resources.explosion.play(SFX_VOLUME);
-			game.goToScoreScreen(score, false);
+			game.goToScoreScreen((int) score, false);
 		}
 	}
 
@@ -297,6 +245,15 @@ public class RhythmScreen extends GameScreen implements InputProcessor {
 	public void dispose() {
 		conductor.music.dispose();
 		Gdx.input.setInputProcessor(null);
+	}
+	
+	private void addStarParticle() {
+		float dx = rand.nextFloat() * (40 + combo * 6) - (20 + combo * 3);
+		float dy = rand.nextFloat() * (60 + combo * 10) + (30 + combo * 5);
+		float dtheta = rand.nextFloat() * 360 - 180;
+		float x = Constants.TRACK_LEFT_BASE_X + Constants.TRACK_SEP_BASE * selected + dx;
+		Particle p = new Particle(x, Constants.TRACK_BASE_Y, dx, dy, Constants.PARTICLE_STAR_DELTA_SCALE, Constants.PARTICLE_STAR_DELTA_ALPHA, dtheta, Resources.star);
+		particles.add(p);
 	}
 	
 	private void prepGraphics() {
@@ -443,6 +400,10 @@ public class RhythmScreen extends GameScreen implements InputProcessor {
 	}
 	
 	private void gainPoints() {
+		// Add some stars
+		for(int i = 0; i < combo + 2; i++) {
+			addStarParticle();
+		}
 		hits++;
 		score += Constants.SCORE_PER_HIT * combo;
 		if(hits % Constants.SCORE_HITS_PER_COMBO == 0 && combo < Constants.SCORE_MAX_COMBO) {
